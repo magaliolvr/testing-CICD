@@ -4,3 +4,7 @@
 # React Router
 /.react-router/
 /build/
+
+
+# env / secrets / do not upload to repo
+.env
