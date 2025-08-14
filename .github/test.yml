@@ -1,0 +1,139 @@
+Magali
+mag_olvr
+Invisível
+
+Este é o começo do canal #mód-7-infraestrutura. 
+Nuno Costa — 19:16
+https://preview--front-end-exploratorium.lovable.app/cicd
+Tipo de arquivo em anexo: unknown
+cicd.odp
+4.22 MB
+Web Fundamentals - Front-End Course
+Front-End Web Development Course by Nuno Costa at EDIT
+Web Fundamentals - Front-End Course
+Tipo de arquivo em anexo: acrobat
+cicdpdf.pdf
+1.12 MB
+Magali — 19:32
+https://app.diagrams.net/
+Nuno Costa — 19:57
+Imagem
+Imagem
+Nuno Costa — 20:11
+Vamos fazer:
+-criar um novo repo (testing-cicd)
+-e criar um projecto de react usando o react-router (https://react.dev/learn/creating-a-react-app)
+npx create-react-router@latest
+Creating a React App – React
+The library for web and native user interfaces
+Creating a React App – React
+Nuno Costa — 20:23
+WINDOWS:
+-criei manualmente uma pasta chamada EDIT (podem ja ter esta pasta)
+-abri o terminal nesta pasta chamada EDIT / windows: Open GitBash here
+-git clone htpps//github.com/nuno/testingcicd 
+npx create-react-router@latest
+Quando perguntar "Where should we create your new project?"
+voces escrevem:
+./testing-cicd
+Depois clickem Enter quando perguntar se querem instalar dependencies
+Depois esperar que aquilo instale tudo 
+Nuno Costa — 20:51
+-git add .
+-git commit -m "mensagem"
+-git push
+Catarina — 21:03
+fiz tudo de novo e já deu
+Magali — 21:08
+tbm ja consegui
+Nuno Costa — 21:28
+boa!
+Magali — 21:33
+Imagem
+Nuno Costa — 22:11
+DNS Records
+Nuno Costa — 22:42
+# Name of the workflow as it appears in GitHub Actions UI
+name: CI/CD Pipeline
+
+# Defines when the workflow should run
+on:
+  # Run this workflow on pull requests targeting the `main` branch
+Expandir
+test.yml
+3 KB
+﻿
+# Name of the workflow as it appears in GitHub Actions UI
+name: CI/CD Pipeline
+
+# Defines when the workflow should run
+on:
+  # Run this workflow on pull requests targeting the `main` branch
+  pull_request:
+    branches: [ main ]
+
+  # Run this workflow on direct pushes to the `main` branch (e.g., after merge)
+  push:
+    branches: [ main ]  # Deploy on merge to main
+
+# Define individual jobs
+jobs:
+  # First job: Running tests
+  test:
+    runs-on: ubuntu-latest  # Use the latest version of Ubuntu runner
+    steps:
+      - name: Checkout code  # Step 1: Clone the repository into the runner
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js  # Step 2: Set up the Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'  # Use Node.js version 18
+
+      - name: Install dependencies  # Step 3: Install all Node.js dependencies using clean install
+        run: npm ci
+
+      - name: Run tests  # Step 4: Run your project's tests
+        run: npm test
+
+  # Second job: Type checking
+  typecheck:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+    needs: test  # This job runs only after the `test` job has completed successfully
+
+    steps:
+      - name: Checkout code  # Clone the repo again for this job
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js  # Set up Node.js again
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies  # Install dependencies again
+        run: npm ci
+
+      - name: Run TypeScript typecheck  # Run your TypeScript type checking (assumes you have a script for it)
+        run: npm run typecheck
+
+  # Third job: Building the project
+  build:
+    runs-on: ubuntu-latest  # Use Ubuntu runner
+    needs: [test, typecheck]  # This job will run only after both `test` and `typecheck` complete
+
+    steps:
+      - name: Checkout code  # Clone the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js  # Set up Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies  # Install dependencies
+        run: npm ci
+
+      - name: Run build  # Run the build command (assumes you have a build script defined in package.json)
+        run: npm run build
+test.yml
+3 KB
